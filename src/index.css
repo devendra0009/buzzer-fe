@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --btn-background-color: rgb(54, 54, 54);
+  --btn-hover-background-color: rgb(40, 40, 40);
+  --text-light-gray: #d3d3d3ad;
+  --outliner-color: rgb(38, 38, 38);
+  --scrollbar-thumb-color: rgb(54, 54, 54);
+  --scrollbar-thumb-hover: rgb(40, 40, 40);
+  --scrollbar-track-color: rgb(24, 24, 24);
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+  opacity: 1 !important;}
+
+/* Global scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px; /* Width of vertical scrollbar */
+  height: 8px; /* Height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color); /* Thumb color */
+  border-radius: 10px; /* Rounded edges for thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover); /* Hover effect on thumb */
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track-color); /* Track color */
+  border-radius: 10px;
+}
+
+/* Optional: Disable scrollbar buttons (arrows) */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* 
+.drag-target {
+  touch-action: none;
+} */
+
+
+/* Optional: Handle scrollbar for Firefox */
+* {
+  scrollbar-width: thin; /* Makes scrollbar thinner */
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color); /* Thumb and track color */
+}
+
+/* Basic settings */
+html {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: black;
+  color: #e2e8f0;
+}
