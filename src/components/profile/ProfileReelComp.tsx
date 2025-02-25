@@ -37,7 +37,7 @@ const ProfileReelComp: React.FC<ProfileReelCompProps> = ({ userData }) => {
   }, [userData?.reels]);
 
   const handleModalClose = () => {
-    // debugger;
+    ;
     setIsOpenReelModal(false);
   };
 

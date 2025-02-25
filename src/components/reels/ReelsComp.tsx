@@ -52,11 +52,11 @@ const ReelsComp = () => {
 
   const handlers = useSwipeable({
     onSwipedUp: () => {
-      // debugger;
+      ;
       handleDown();
     },
     onSwipedDown: () => {
-      // debugger;
+      ;
       handleUp();
     },
     ...config,

@@ -104,7 +104,7 @@ const MessageContainer = () => {
   };
 
   const onMessageReceive = (message) => {
-    // debugger;
+    ;
     console.log("msg received", JSON.parse(message.body));
 
     dispatch(appendMessageInSelectedChat(JSON.parse(message.body)));

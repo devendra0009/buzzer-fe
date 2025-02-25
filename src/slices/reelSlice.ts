@@ -23,7 +23,7 @@ export const getAllReels = createAsyncThunk(
   "allReels",
   async (_, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllReelsFromApi();
       return response;
     } catch (error: any) {
@@ -37,7 +37,7 @@ export const createReel = createAsyncThunk(
   "createReel",
   async ({ data, navigate }, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await createReelByApi(data);
       navigate("/");
       return response;
@@ -60,7 +60,7 @@ const reelSlice = createSlice({
       .addCase(getAllReels.fulfilled, (state, action) => {
         state.loading = false;
         const reelData = action.payload.data;
-        // debugger;
+        ;
         state.reelData = reelData;
       })
       .addCase(getAllReels.rejected, (state, action) => {

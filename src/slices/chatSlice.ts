@@ -25,7 +25,7 @@ export const getAllChatsForCurrUser = createAsyncThunk(
   "getAllChatsForCurrUser",
   async (_, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllChatsForCurrUserFromApi();
       return response;
     } catch (error: any) {
@@ -37,7 +37,7 @@ export const getChatById = createAsyncThunk(
   "getChatById",
   async (chatId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getChatByIdFromApi(chatId);
       return response;
     } catch (error: any) {

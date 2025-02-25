@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Avatar, Box, Button, Modal, Typography } from "@mui/material";
 import CustomProfileIconComp from "../profile/CustomProfileIconComp";
 import { BASE_URI_SOCKET, RAND_IMG2 } from "../../config/config";
 import { getChatPartnerData, modalStyle } from "../../helpers/helpers";
@@ -15,6 +15,8 @@ import {
 import { ChatState } from "../../interfaces/chats/chatInterface";
 import MessageContainer from "./MessageContainer";
 import { getAllMessagesByChatId } from "../../slices/messageSlice";
+import { getAllUserBySort } from "../../apis/user/userApi";
+import { CheckBox } from "@mui/icons-material";
 
 // const chats = [
 //   { img: RAND_IMG2, name: "Dave", lastMsg: "Good" },
@@ -31,6 +33,7 @@ const MessagesComp = () => {
   );
   // const [isChatOpen, setIsChatOpen] = useState(false);
   const [sendMsgModalOpen, setSendMsgModalOpen] = useState(false);
+  const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
 
   const handleSmsOpen = () => setSendMsgModalOpen(true);
   const handleSmsClose = () => setSendMsgModalOpen(false);
@@ -43,6 +46,20 @@ const MessagesComp = () => {
 
   useEffect(() => {
     dispatch(getAllChatsForCurrUser());
+  }, []);
+
+  console.log(recommendedUsers, "SHUBHAM");
+
+  useEffect(() => {
+    const fetchRecommendedUsers = async () => {
+      try {
+        const response = await getAllUserBySort("followers");
+        setRecommendedUsers(response.data);
+      } catch (error) {
+        console.error("Failed to fetch recommended users:", error);
+      }
+    };
+    fetchRecommendedUsers();
   }, []);
 
   return (
@@ -153,9 +170,24 @@ const MessagesComp = () => {
                 className="ms-3 bg-transparent focus:outline-none px-3 py-2 w-[500px]"
               />
             </div>
-            <div className="suggestions h-[200px] p-4 text-[var(--text-light-gray)]">
-              No account found
-            </div>
+            {recommendedUsers.length > 0 ? (
+              recommendedUsers?.map((recommendedUser, id) => (
+                <div className="d-flex justify-between align-center">
+                  <Avatar
+                    alt={recommendedUser?.firstName}
+                    src="/static/images/avatar/1.jpg"
+                    sx={{ width: 75, height: 75 }}
+                  />
+                  {recommendedUser?.firstName + " " + recommendedUser?.lastName}
+                  <CheckBox />
+                  
+                </div>
+              ))
+            ) : (
+              <div className="suggestions h-[200px] p-4 text-[var(--text-light-gray)]">
+                No account found
+              </div>
+            )}
 
             <div className="flex justify-center my-4">
               <Button
