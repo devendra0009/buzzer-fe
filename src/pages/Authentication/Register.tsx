@@ -9,6 +9,7 @@ import {
   Radio,
   RadioGroup,
   FormHelperText,
+  Avatar,
 } from "@mui/material";
 import { RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,12 +20,14 @@ const Register = () => {
   const dispatch = useDispatch();
 
   // Form state variables
+  const [profileImg, setProfileImg] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("MALE");
+  const [userName, setUserName] = useState("");
 
   // Error state variables
   const [emailError, setEmailError] = useState("");
@@ -97,31 +100,42 @@ const Register = () => {
   // Handle register button click
   const handleRegisterClick = () => {
     if (validateInputs()) {
-      console.log("Registering with", {
-        email,
-        password,
-        firstName,
-        lastName,
-        phone,
-        gender,
-      });
-      // Dispatch register action with form data
-      const data = {
-        email,
-        password,
-        firstName,
-        lastName,
-        phone,
-        gender,
-      };
+
+      // const data = {
+      //   profileImg,
+      //   email,
+      //   userName,
+      //   password,
+      //   firstName,
+      //   lastName,
+      //   phone,
+      //   gender,
+      // };
+
+      const data = new FormData();
+      data.append("profileImg", profileImg);
+      data.append("email", email);
+      data.append("userName", userName);
+      data.append("password", password);
+      data.append("firstName", firstName);
+      data.append("lastName", lastName);
+      data.append("phone", phone);
+      data.append("gender", gender);
+
       dispatch(register(data));
-      
     }
   };
 
   return (
     <div className="">
       <p>Sign up to see photos and videos from your friends.</p>
+      <div className="flex justify-center mt-4">
+        <Avatar
+          alt={userName}
+          src="/static/images/avatar/1.jpg"
+          sx={{ width: 75, height: 75 }}
+        />
+      </div>
       <Button
         variant="contained"
         sx={{ width: "80%", margin: "1.5rem 0" }}
@@ -143,6 +157,17 @@ const Register = () => {
           onChange={(e) => setEmail(e.target.value)}
           error={!!emailError}
           helperText={emailError}
+        />
+        <TextField
+          id="userName"
+          label="User Name"
+          variant="outlined"
+          size="small"
+          sx={{ width: "80%" }}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          // error={!!userNameError}
+          // helperText={userNameError}
         />
         <TextField
           id="password"

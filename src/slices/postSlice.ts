@@ -55,7 +55,7 @@ export const getAllPosts = createAsyncThunk(
   "allPosts",
   async (_, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllPostsFromApi();
       return response;
     } catch (error: any) {
@@ -68,7 +68,7 @@ export const createPost = createAsyncThunk(
   "createPost",
   async ({ data, navigate }, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await createPostByApi(data);
       navigate("/");
       return response;
@@ -82,7 +82,7 @@ export const liketPost = createAsyncThunk(
   "liketPost",
   async (postId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await liketPostByApi(postId);
       // navigate("/profile");
       return response;
@@ -96,7 +96,7 @@ export const savePost = createAsyncThunk(
   "savePost",
   async (postId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await savePostByApi(postId);
       // navigate("/profile");
       return response;
@@ -110,7 +110,7 @@ export const commentOnPost = createAsyncThunk(
   "commentOnPost",
   async (data, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await commentOnPostByApi(data);
       // navigate("/profile");
       return response;
@@ -123,7 +123,7 @@ export const likeAComment = createAsyncThunk(
   "likeAComment",
   async (commentId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await likeACommentByApi(commentId);
       // navigate("/profile");
       return response;
@@ -137,7 +137,7 @@ export const getAllCommentsByPost = createAsyncThunk(
   "getAllCommentsByPost",
   async (postId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllCommentsByPostByApi(postId);
       // navigate("/profile");
       return response;

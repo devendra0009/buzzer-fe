@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BASE_URI } from "../../config/config";
 import customAxios from "../../config/axiosInterceptor";
+import { DEFAULT_PAGE_SIZE } from "../../helpers/helpers";
 
 export const getUserDetailsByTokenApi = async () => {
   const response = await customAxios.get(`${BASE_URI}/users/profile`);
@@ -12,43 +13,71 @@ export const getUserDetailsByTokenApi = async () => {
   };
 };
 
-export const getPostsByUserIdFromApi = async (userId) => {
-  const response = await customAxios.get(`${BASE_URI}/post/user/${userId}`);
+export const getPostsByUserIdFromApi = async (
+  userId,
+  page: number = 0,
+  size: number = DEFAULT_PAGE_SIZE
+) => {
+  const response = await customAxios.get(`${BASE_URI}/post/user/${userId}`, {
+    params: {
+      page,
+      size,
+    },
+  });
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data,
+    data: response.data.data.data,
   };
 };
+//shubham
 
-export const getReelsByUserIdFromApi = async (userId) => {
-  const response = await customAxios.get(`${BASE_URI}/reel/user/${userId}`);
-  // debugger;
+export const getReelsByUserIdFromApi = async (
+  userId,
+  page: number = 0,
+  size: number = DEFAULT_PAGE_SIZE
+) => {
+  const response = await customAxios.get(`${BASE_URI}/reel/user/${userId}`, {
+    params: {
+      page,
+      size,
+    },
+  });
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data,
+    data: response.data.data.data,
   };
 };
+//shubham
 
-export const getSavedPostsByUserIdFromApi = async (userId) => {
+export const getSavedPostsByUserIdFromApi = async (
+  userId,
+  page: number = 0,
+  size: number = DEFAULT_PAGE_SIZE
+) => {
   const response = await customAxios.get(
-    `${BASE_URI}/post/saved/get/${userId}`
+    `${BASE_URI}/post/saved/get/${userId}`,
+    {
+      params: {
+        page,
+        size,
+      },
+    }
   );
-  // debugger;
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data,
+    data: response.data.data.data,
   };
 };
+//shubham
 
 export const followUnfollowUserFromApi = async (userId) => {
   const response = await customAxios.put(`${BASE_URI}/users/follow/${userId}`);
-  // debugger;
   return {
     status: response.status,
     success: true,
@@ -57,37 +86,52 @@ export const followUnfollowUserFromApi = async (userId) => {
   };
 };
 
-export const searchUser = async (query: string, page = 0, size = 5) => {
-  const response = await customAxios.get(
-    `${BASE_URI}/users/search?page=${page}&size=${size}&query=${query}`
-  );
-  // debugger;
+export const searchUser = async (
+  query: string,
+  page: number = 0,
+  size: number = DEFAULT_PAGE_SIZE
+) => {
+  const response = await customAxios.get(`${BASE_URI}/users/search`, {
+    params: {
+      page,
+      size,
+      query,
+    },
+  });
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data,
+    data: response.data.data.data,
   };
 };
+//shubham
 
-export const getAllUserBySort = async (sortBy: string, page = 0, size = 5) => {
-  const response = await customAxios.get(
-    `${BASE_URI}/users?page=${page}&size=${size}&sortBy=${sortBy}`
-  );
-  // debugger;
+export const getAllUserBySort = async (
+  sortBy: string,
+  page: number = 0,
+  size: number = DEFAULT_PAGE_SIZE
+) => {
+  const response = await customAxios.get(`${BASE_URI}/users`, {
+    params: {
+      page,
+      size,
+      sortBy,
+    },
+  });
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data,
+    data: response.data.data.data,
   };
 };
+//shubham
 
 export const getUserById = async (userId: number) => {
   console.log(userId);
 
   const response = await customAxios.get(`${BASE_URI}/users/${userId}`);
-  // debugger;
   return {
     status: response.status,
     success: true,

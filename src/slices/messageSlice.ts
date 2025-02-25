@@ -20,7 +20,7 @@ export const getAllMessagesByChatId = createAsyncThunk(
   "getAllMessagesByChatId",
   async (chatId: number, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllMessagesByChatIdFromApi(chatId);
       dispatch(setMessagesInSelectedChat(response.data));
       return response;
@@ -33,7 +33,7 @@ export const createMessageForChat = createAsyncThunk(
   "createMessageForChat",
   async (reqData, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await createMessageForChatFromApi(reqData);
       // dispatch(appendMessageInSelectedChat(response.data));
 

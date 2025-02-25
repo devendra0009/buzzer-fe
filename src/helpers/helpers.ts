@@ -138,3 +138,5 @@ export const findCurrUsersExcludingStories = (
 export const openClickedProfile = (userId, navigate) => {
   navigate(`/profile/${userId}`);
 };
+
+export const DEFAULT_PAGE_SIZE=10;

@@ -31,7 +31,7 @@ export const createStory = createAsyncThunk(
   "createStory",
   async (data: StoryRequest, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await createStoryFromApi(data);
       dispatch(appendStoryForUser(response.data));
       return response;
@@ -45,7 +45,7 @@ export const getAllStoryForUser = createAsyncThunk(
   "getAllStoryForUser",
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllStoryForUserFromApi();
       dispatch(setStoriesForUser(response.data));
       return response;
@@ -59,7 +59,7 @@ export const getAllStoryOfUser = createAsyncThunk(
   "getAllStoryOfUser",
   async (userId: number, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await getAllStoryOfUserFromApi(userId); // this is to add story of the searched guy and add story of current guy
       dispatch(appendStoryForUser(response.data));
       return response;

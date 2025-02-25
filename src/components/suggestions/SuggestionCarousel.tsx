@@ -53,7 +53,7 @@ const SuggestionCarousel = () => {
           }}
           onSwiper={(swiper) => console.log(swiper)}
         >
-          {recommendedUsers.slice(0, 5).map(
+          {recommendedUsers?.map(
             (
               user,
               idx // Map over the fetched users

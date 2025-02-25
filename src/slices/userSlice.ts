@@ -37,7 +37,7 @@ export const getUserDetailsByToken = createAsyncThunk(
   "userDetails",
   async (_, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getUserDetailsByTokenApi();
       return response;
     } catch (error: any) {
@@ -49,7 +49,7 @@ export const getPostsByUserId = createAsyncThunk(
   "postByUserId",
   async (userId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getPostsByUserIdFromApi(userId);
       return response;
     } catch (error: any) {
@@ -62,7 +62,7 @@ export const getReelsByUserId = createAsyncThunk(
   "reelByUserId",
   async (userId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getReelsByUserIdFromApi(userId);
       return response;
     } catch (error: any) {
@@ -75,7 +75,7 @@ export const getSavedPostsByUserId = createAsyncThunk(
   "getSavedPostsByUserId",
   async (userId, { rejectWithValue }) => {
     try {
-      // debugger;
+      ;
       const response = await getSavedPostsByUserIdFromApi(userId);
       return response;
     } catch (error: any) {
@@ -88,7 +88,7 @@ export const followUnfollowUser = createAsyncThunk(
   "followUnfollowUser",
   async (userId, { rejectWithValue, dispatch }) => {
     try {
-      // debugger;
+      ;
       const response = await followUnfollowUserFromApi(userId);
 
       dispatch(getAllStoryForUser());
@@ -119,7 +119,7 @@ const userSlice = createSlice({
       })
       .addCase(getUserDetailsByToken.fulfilled, (state, action) => {
         state.loading = false;
-        // debugger;
+        ;
         const userData = action.payload.data;
 
         // userData["imgLink"] = userData.profileImg;
@@ -160,7 +160,7 @@ const userSlice = createSlice({
       .addCase(getReelsByUserId.fulfilled, (state, action) => {
         state.loading = false;
         const reelData = action.payload.data;
-        // debugger;
+        ;
         state.userData.reels = reelData;
       })
       .addCase(getReelsByUserId.rejected, (state, action) => {

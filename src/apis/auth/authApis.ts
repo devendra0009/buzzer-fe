@@ -10,7 +10,15 @@ import customAxios from "../../config/axiosInterceptor";
 export const registerUser = async (
   requestData: RegisterRequest
 ): Promise<ApiResponse<AuthResponse | null>> => {
-  const response = await customAxios.post(`${BASE_URI}/auth/register`, requestData);
+  const response = await customAxios.post(
+    `${BASE_URI}/auth/register`,
+    requestData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
   return {
     status: response.status,
     success: true,
@@ -22,7 +30,10 @@ export const registerUser = async (
 export const loginUser = async (
   requestData: LoginRequest
 ): Promise<ApiResponse<AuthResponse | null>> => {
-  const response = await customAxios.post(`${BASE_URI}/auth/login`, requestData);
+  const response = await customAxios.post(
+    `${BASE_URI}/auth/login`,
+    requestData
+  );
   return {
     status: response.status,
     success: true,

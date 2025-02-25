@@ -21,7 +21,6 @@ export const register = createAsyncThunk(
   "authRegister",
   async (userData: RegisterRequest, { rejectWithValue }) => {
     try {
-      // debugger;
       const response = await registerUser(userData);
       return response;
     } catch (error: any) {
@@ -36,7 +35,6 @@ export const login = createAsyncThunk(
   "authLogin",
   async (credentials: LoginRequest, { rejectWithValue }) => {
     try {
-      // debugger;
       const response = await loginUser(credentials);
       return response;
     } catch (error: any) {
@@ -82,7 +80,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.token = action.payload?.data?.token || "";
         setTokenInLocalStorage(state.token);
-        
       })
       .addCase(login.rejected, (state, action) => {
         state.token = "";

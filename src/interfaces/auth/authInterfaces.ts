@@ -17,10 +17,14 @@ export interface AuthResponse {
 }
 
 export interface RegisterRequest {
+  profileImg: any; //Change type to file
   email: string;
   password: string;
   userName: string;
   gender: GenderEnum;
+  firstName: string;
+  lastName: string;
+  phone: string;
 }
 
 export enum GenderEnum {
