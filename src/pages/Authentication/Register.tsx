@@ -56,16 +56,8 @@ const Register = () => {
 
   // Validate form inputs
   const validateInputs = () => {
+    // debugger
     let valid = true;
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError("Invalid email address");
-      valid = false;
-    } else {
-      setEmailError("");
-    }
 
     // Password validation
     if (password.length < 6) {
@@ -91,15 +83,6 @@ const Register = () => {
       setLastNameError("");
     }
 
-    // Phone validation (basic validation)
-    // const phoneRegex = /^[0-9]{10}$/; // 10 digits for phone
-    // if (!phoneRegex.test(phone)) {
-    //   setPhoneError("Phone number must be 10 digits");
-    //   valid = false;
-    // } else {
-    //   setPhoneError("");
-    // }
-
     // Gender validation
     if (!gender) {
       setGenderError("Gender is required");
@@ -108,12 +91,12 @@ const Register = () => {
       setGenderError("");
     }
 
-    if (!profileImg) {
-      setProfileImgError("Profile image is required");
-      valid = false;
-    } else {
-      setProfileImgError("");
-    }
+    // if (!profileImg) {
+    //   setProfileImgError("Profile image is required");
+    //   valid = false;
+    // } else {
+    //   setProfileImgError("");
+    // }
     return valid;
   };
 
@@ -121,6 +104,7 @@ const Register = () => {
   const handleRegisterClick = () => {
     // debugger
     if (validateInputs()) {
+      // debugger;
       const data = new FormData();
       if (profileImg) data.append("profileImg", profileImg);
 
@@ -129,6 +113,26 @@ const Register = () => {
         data.append("email", email); // Store as email
       } else {
         data.append("phone", email); // Store as phone if not an email
+      }
+      for (let [key, value] of data.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      // Email validation
+      if (data.has("email") && !emailRegex.test(email)) {
+        setEmailError("Invalid email address");
+        return;
+      } else {
+        setEmailError("");
+      }
+
+      // Phone validation (basic validation)
+      const phoneRegex = /^[0-9]{10}$/; // 10 digits for phone
+      if (data.has("phone") && !phoneRegex.test(email)) {
+        setEmailError("Phone number must be 10 digits");
+        return;
+      } else {
+        setPhoneError("");
       }
 
       data.append("userName", userName);
