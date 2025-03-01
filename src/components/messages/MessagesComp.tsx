@@ -2,27 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Avatar, Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Modal } from "@mui/material";
 import CustomProfileIconComp from "../profile/CustomProfileIconComp";
-import { BASE_URI_SOCKET, RAND_IMG2 } from "../../config/config";
 import { getChatPartnerData, modalStyle } from "../../helpers/helpers";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  getAllChatsForCurrUser,
-  getChatById,
-  setSelectedChat,
-} from "../../slices/chatSlice";
-import { ChatState } from "../../interfaces/chats/chatInterface";
+import { getAllChatsForCurrUser, getChatById } from "../../slices/chatSlice";
 import MessageContainer from "./MessageContainer";
 import { getAllMessagesByChatId } from "../../slices/messageSlice";
-import { getAllUserBySort } from "../../apis/user/userApi";
-import { CheckBox } from "@mui/icons-material";
+import { searchUser } from "../../apis/user/userApi";
+import useDebounce from "../../hook/useDebounce";
+import TextLightGraySmall from "../reusableComp/TextLightGraySmall";
+import { createNewChat } from "../../apis/chat/chatApis";
 
-// const chats = [
-//   { img: RAND_IMG2, name: "Dave", lastMsg: "Good" },
-//   { img: RAND_IMG2, name: "Gold", lastMsg: "Hi" },
-//   { img: RAND_IMG2, name: "Rick", lastMsg: "Ok" },
-// ];
 const MessagesComp = () => {
   const { allChats, selectedChat } = useSelector(
     (state: RootState) => state.chat
@@ -33,10 +24,50 @@ const MessagesComp = () => {
   );
   // const [isChatOpen, setIsChatOpen] = useState(false);
   const [sendMsgModalOpen, setSendMsgModalOpen] = useState(false);
-  const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
+  // const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]); // State to store search results
+  const debouncedSearchQuery = useDebounce(searchQuery, 500); // 500ms debounce delay
+  const [selectedUsers, setSelectedUsers] = useState<any>([]);
 
+  const handleUserSelect = (userId) => {
+    setSelectedUsers((prevUsers) =>
+      prevUsers.includes(userId)
+        ? prevUsers.filter((id) => id !== userId)
+        : [...prevUsers, userId]
+    );
+  };
+
+  const fetchUserByQuery = async () => {
+    const res = await searchUser(debouncedSearchQuery);
+    setSearchResults(res?.data);
+  };
+
+  // Fetch search results based on the debounced search query
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      fetchUserByQuery();
+    }
+  }, [debouncedSearchQuery]); // Re-run this effect when debouncedSearchQuery changes
+
+  const handleChange = (e) => setSearchQuery(e.target.value);
   const handleSmsOpen = () => setSendMsgModalOpen(true);
   const handleSmsClose = () => setSendMsgModalOpen(false);
+
+  const handleChatBtnClick = () => {
+    // write logic in slice also for now directly calling from service and write logic of error handling
+    try {
+      createNewChat(selectedUsers).then(() => {
+        handleSmsClose();
+        setSearchQuery("");
+        setSelectedUsers([]);
+        setSearchResults([]);
+        dispatch(getAllChatsForCurrUser());
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleChatClick = (chatId) => {
     dispatch(getChatById(chatId)).then((data) => {
@@ -48,19 +79,18 @@ const MessagesComp = () => {
     dispatch(getAllChatsForCurrUser());
   }, []);
 
-  console.log(recommendedUsers, "SHUBHAM");
-
-  useEffect(() => {
-    const fetchRecommendedUsers = async () => {
-      try {
-        const response = await getAllUserBySort("followers");
-        setRecommendedUsers(response.data);
-      } catch (error) {
-        console.error("Failed to fetch recommended users:", error);
-      }
-    };
-    fetchRecommendedUsers();
-  }, []);
+  // logic for showing suggested users in the modal
+  // useEffect(() => {
+  //   const fetchRecommendedUsers = async () => {
+  //     try {
+  //       const response = await getAllUserBySort("followers");
+  //       setRecommendedUsers(response.data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch recommended users:", error);
+  //     }
+  //   };
+  //   fetchRecommendedUsers();
+  // }, []);
 
   return (
     <div className=" w-full flex ">
@@ -166,33 +196,68 @@ const MessagesComp = () => {
             <div className="font-medium search border-[1px] border-r-0 border-l-0 border-[var(--outliner-color)] ps-3">
               To:
               <input
+                value={searchQuery}
+                onChange={handleChange}
                 type="text"
                 className="ms-3 bg-transparent focus:outline-none px-3 py-2 w-[500px]"
               />
             </div>
-            {recommendedUsers.length > 0 ? (
+            {/* basic ui for now */}
+            {/* {recommendedUsers.length > 0 ? (
               recommendedUsers?.map((recommendedUser, id) => (
-                <div className="d-flex justify-between align-center">
+                <div className="flex justify-between p-4 items-center">
                   <Avatar
                     alt={recommendedUser?.firstName}
                     src="/static/images/avatar/1.jpg"
-                    sx={{ width: 75, height: 75 }}
                   />
                   {recommendedUser?.firstName + " " + recommendedUser?.lastName}
                   <CheckBox />
-                  
                 </div>
               ))
             ) : (
               <div className="suggestions h-[200px] p-4 text-[var(--text-light-gray)]">
                 No account found
               </div>
-            )}
+            )} */}
+            <div className="suggestions h-[200px] p-4 text-[var(--text-light-gray)]">
+              {searchResults.length > 0 ? (
+                searchResults.map((user: any, idx) => (
+                  <div
+                    key={idx}
+                    className=" flex justify-between items-center hover:cursor-pointer hover:bg-[var(--btn-hover-background-color)] p-4"
+                    // onClick={() => openClickedProfile(user?.id, navigate)}
+                  >
+                    <div className=" flex  items-center gap-2">
+                      <CustomProfileIconComp
+                        width="35px"
+                        height="35px"
+                        imgLink={user?.profileImg}
+                      />
+                      <div className="name flex flex-col">
+                        <span>{user?.userName}</span>
+                        <TextLightGraySmall
+                          text={`${user?.firstName} ${user?.lastName}`}
+                        />
+                      </div>
+                    </div>
+                    <Checkbox
+                      checked={selectedUsers.includes(user?.id)}
+                      onChange={() => {
+                        handleUserSelect(user?.id);
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div>No users found</div>
+              )}
+            </div>
 
             <div className="flex justify-center my-4">
               <Button
                 variant="contained"
                 sx={{ textTransform: "initial", width: "95%" }}
+                onClick={handleChatBtnClick}
               >
                 Chat
               </Button>
