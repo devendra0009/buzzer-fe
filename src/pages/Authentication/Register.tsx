@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import {
   Button,
@@ -14,13 +14,26 @@ import {
 import { RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../slices/authSlice";
+import AddIcon from "@mui/icons-material/Add";
+import CustomImageComp from "../../components/reusableComp/CustomImageComp";
+import { useNavigate } from "react-router-dom";
+import {
+  getPostsByUserId,
+  getReelsByUserId,
+  getUserDetailsByToken,
+} from "../../slices/userSlice";
+import { getAllPosts } from "../../slices/postSlice";
+import { getAllReels } from "../../slices/reelSlice";
+import { getAllStoryForUser } from "../../slices/storySlice";
 
 const Register = () => {
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const imageRef = useRef(null);
 
   // Form state variables
-  const [profileImg, setProfileImg] = useState("");
+  const [profileImg, setProfileImg] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -36,6 +49,7 @@ const Register = () => {
   const [lastNameError, setLastNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [genderError, setGenderError] = useState("");
+  const [profileImgError, setProfileImgError] = useState("");
 
   // Handle login with Facebook (not implemented)
   const handleLoginWithFacebookClick = () => {};
@@ -78,13 +92,13 @@ const Register = () => {
     }
 
     // Phone validation (basic validation)
-    const phoneRegex = /^[0-9]{10}$/; // 10 digits for phone
-    if (!phoneRegex.test(phone)) {
-      setPhoneError("Phone number must be 10 digits");
-      valid = false;
-    } else {
-      setPhoneError("");
-    }
+    // const phoneRegex = /^[0-9]{10}$/; // 10 digits for phone
+    // if (!phoneRegex.test(phone)) {
+    //   setPhoneError("Phone number must be 10 digits");
+    //   valid = false;
+    // } else {
+    //   setPhoneError("");
+    // }
 
     // Gender validation
     if (!gender) {
@@ -94,48 +108,47 @@ const Register = () => {
       setGenderError("");
     }
 
+    if (!profileImg) {
+      setProfileImgError("Profile image is required");
+      valid = false;
+    } else {
+      setProfileImgError("");
+    }
     return valid;
   };
 
   // Handle register button click
   const handleRegisterClick = () => {
+    // debugger
     if (validateInputs()) {
-
-      // const data = {
-      //   profileImg,
-      //   email,
-      //   userName,
-      //   password,
-      //   firstName,
-      //   lastName,
-      //   phone,
-      //   gender,
-      // };
-
       const data = new FormData();
-      data.append("profileImg", profileImg);
-      data.append("email", email);
+      if (profileImg) data.append("profileImg", profileImg);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailRegex.test(email)) {
+        data.append("email", email); // Store as email
+      } else {
+        data.append("phone", email); // Store as phone if not an email
+      }
+
       data.append("userName", userName);
       data.append("password", password);
       data.append("firstName", firstName);
       data.append("lastName", lastName);
-      data.append("phone", phone);
       data.append("gender", gender);
 
-      dispatch(register(data));
+      dispatch(register(data)).then((data) => {
+        console.log(data);
+        if (data.payload.status === 201 || data.payload.status === 200) {
+          navigate("/");
+        }
+      });
     }
   };
 
   return (
     <div className="">
       <p>Sign up to see photos and videos from your friends.</p>
-      <div className="flex justify-center mt-4">
-        <Avatar
-          alt={userName}
-          src="/static/images/avatar/1.jpg"
-          sx={{ width: 75, height: 75 }}
-        />
-      </div>
       <Button
         variant="contained"
         sx={{ width: "80%", margin: "1.5rem 0" }}
@@ -147,6 +160,64 @@ const Register = () => {
       </Button>
       <p>OR</p>
       <div className="texts flex flex-col gap-4 justify-center items-center my-6">
+        <div className="flex w-[80%] justify-between">
+          <div className="flex flex-col gap-4 ">
+            <TextField
+              id="firstName"
+              label="First Name"
+              variant="outlined"
+              size="small"
+              sx={{ width: "100%" }}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              error={!!firstNameError}
+              helperText={firstNameError}
+            />
+            <TextField
+              id="lastName"
+              label="Last Name"
+              variant="outlined"
+              size="small"
+              sx={{ width: "100%" }}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              error={!!lastNameError}
+              helperText={lastNameError}
+            />
+          </div>
+          <div className=" flex justify-center items-center w-1/3 relative">
+            <Avatar
+              alt={userName}
+              src={
+                profileImg !== null
+                  ? URL.createObjectURL(profileImg)
+                  : "/static/images/avatar/1.jpg"
+              }
+              sx={{ width: 75, height: 75 }}
+              className=" cursor-pointer border-2 border-green-500"
+              onClick={() => {
+                imageRef.current?.click();
+              }}
+            />
+            <AddIcon
+              className="absolute bottom-2 right-6 font-bold bg-white rounded-full"
+              fontSize="small"
+            />
+            <input
+              type="file"
+              className=" hidden"
+              ref={imageRef}
+              accept="image/*"
+              onChange={(event) => {
+                const file = event?.target?.files[0];
+                if (file) {
+                  console.log("Selected file:", file);
+                  setProfileImg(file);
+                }
+              }}
+            />
+          </div>
+        </div>
         <TextField
           id="mobile-or-email"
           label="Mobile Number or Email"
@@ -179,39 +250,6 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           error={!!passwordError}
           helperText={passwordError}
-        />
-        <TextField
-          id="firstName"
-          label="First Name"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          error={!!firstNameError}
-          helperText={firstNameError}
-        />
-        <TextField
-          id="lastName"
-          label="Last Name"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          error={!!lastNameError}
-          helperText={lastNameError}
-        />
-        <TextField
-          id="phone"
-          label="Phone Number"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          error={!!phoneError}
-          helperText={phoneError}
         />
         <FormControl error={!!genderError} sx={{ width: "80%" }}>
           <RadioGroup
