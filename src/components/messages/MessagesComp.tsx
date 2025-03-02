@@ -13,6 +13,8 @@ import { searchUser } from "../../apis/user/userApi";
 import useDebounce from "../../hook/useDebounce";
 import TextLightGraySmall from "../reusableComp/TextLightGraySmall";
 import { createNewChat } from "../../apis/chat/chatApis";
+import { ChatTypeEnum } from "../../interfaces/chats/chatInterface";
+import { GROUP_IMG } from "../../config/config";
 
 const MessagesComp = () => {
   const { allChats, selectedChat } = useSelector(
@@ -52,7 +54,11 @@ const MessagesComp = () => {
 
   const handleChange = (e) => setSearchQuery(e.target.value);
   const handleSmsOpen = () => setSendMsgModalOpen(true);
-  const handleSmsClose = () => setSendMsgModalOpen(false);
+  const handleSmsClose = () => {
+    setSendMsgModalOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+  };
 
   const handleChatBtnClick = () => {
     // write logic in slice also for now directly calling from service and write logic of error handling
@@ -128,14 +134,24 @@ const MessagesComp = () => {
                 <CustomProfileIconComp
                   width="50px"
                   height="50px"
-                  imgLink={getChatPartnerData(chat, userData?.id)?.profileImg}
+                  imgLink={
+                    chat?.chatType === ChatTypeEnum.GROUP
+                      ? GROUP_IMG
+                      : getChatPartnerData(chat, userData?.id)?.profileImg
+                  }
                 />
               </div>
-              <div className="chat-details flex flex-col">
+              <div className="chat-details flex flex-col min-w-full capitalize">
                 <span>
-                  {getChatPartnerData(chat, userData?.id)?.firstName +
+                  {chat?.chatType === ChatTypeEnum.GROUP ? (
+                    <div className="truncate whitespace-nowrap overflow-hidden max-w-[70%]">
+                      {chat?.users?.map((user) => user?.firstName).join(", ")}
+                    </div>
+                  ) : (
+                    getChatPartnerData(chat, userData?.id)?.firstName +
                     " " +
-                    getChatPartnerData(chat, userData?.id)?.lastName}
+                    getChatPartnerData(chat, userData?.id)?.lastName
+                  )}
                 </span>
                 <span className="text-sm text-[var(--text-light-gray)]">
                   {chat?.messages?.[0]?.content}
@@ -220,34 +236,50 @@ const MessagesComp = () => {
               </div>
             )} */}
             <div className="suggestions h-[200px] p-4 text-[var(--text-light-gray)]">
-              {searchResults.length > 0 ? (
-                searchResults.map((user: any, idx) => (
-                  <div
-                    key={idx}
-                    className=" flex justify-between items-center hover:cursor-pointer hover:bg-[var(--btn-hover-background-color)] p-4"
-                    // onClick={() => openClickedProfile(user?.id, navigate)}
-                  >
-                    <div className=" flex  items-center gap-2">
-                      <CustomProfileIconComp
-                        width="35px"
-                        height="35px"
-                        imgLink={user?.profileImg}
-                      />
-                      <div className="name flex flex-col">
-                        <span>{user?.userName}</span>
-                        <TextLightGraySmall
-                          text={`${user?.firstName} ${user?.lastName}`}
-                        />
+              {searchQuery === "" ? (
+                <div>Search a user to chat</div>
+              ) : searchResults.length > 0 ? (
+                <div className=" max-h-full overflow-y-scroll">
+                  {searchResults.map(
+                    (
+                      user: any,
+                      idx // Added `{}` to wrap the map function
+                    ) => (
+                      <div
+                        key={idx}
+                        className={`flex justify-between items-center hover:cursor-pointer ${
+                          selectedUsers.includes(user?.id)
+                            ? "bg-green-500"
+                            : "hover:bg-[var(--btn-hover-background-color)]"
+                        } p-4 ${
+                          selectedUsers.includes(user?.id) && "bg-green-500"
+                        }`}
+                        onClick={() => handleUserSelect(user?.id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <CustomProfileIconComp
+                            width="35px"
+                            height="35px"
+                            imgLink={user?.profileImg}
+                          />
+                          <div className="name flex flex-col">
+                            <span>{user?.userName}</span>
+                            <TextLightGraySmall
+                              text={`${user?.firstName} ${user?.lastName}`}
+                            />
+                          </div>
+                        </div>
+                        {/* <Checkbox
+                          checked={selectedUsers.includes(user?.id)}
+                          onChange={(e) => {
+                            e.stopPropagation(); // Prevents double triggering when clicking on the checkbox
+                            handleUserSelect(user?.id);
+                          }}
+                        /> */}
                       </div>
-                    </div>
-                    <Checkbox
-                      checked={selectedUsers.includes(user?.id)}
-                      onChange={() => {
-                        handleUserSelect(user?.id);
-                      }}
-                    />
-                  </div>
-                ))
+                    )
+                  )}
+                </div>
               ) : (
                 <div>No users found</div>
               )}

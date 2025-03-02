@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   getChatPartnerData,
   isImage,
@@ -19,9 +20,10 @@ import { Box, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SockJS from "sockjs-client";
 import Stomp, { Client } from "stompjs";
-import { BASE_URI_SOCKET } from "../../config/config";
+import { BASE_URI_SOCKET, GROUP_IMG } from "../../config/config";
 import { appendMessageInSelectedChat } from "../../slices/chatSlice";
 import CustomControlledVideoComp from "../reusableComp/CustomControlledVideoComp";
+import { ChatTypeEnum } from "../../interfaces/chats/chatInterface";
 
 const MessageContainer = () => {
   const dispatch = useDispatch();
@@ -104,7 +106,6 @@ const MessageContainer = () => {
   };
 
   const onMessageReceive = (message) => {
-    ;
     console.log("msg received", JSON.parse(message.body));
 
     dispatch(appendMessageInSelectedChat(JSON.parse(message.body)));
@@ -131,17 +132,32 @@ const MessageContainer = () => {
 
   return (
     <div className="   min-h-screen   relative ">
-      <div className="headers p-6 flex justify-between border-b-[1px] border-b-[var(--outliner-color)]">
-        <div className="dets flex items-center gap-4">
+      <div className="headers p-6 flex justify-between border-b-[1px] border-b-[var(--outliner-color)] gap-4 items-center">
+        <div className="dets flex items-center gap-4 w-full">
           <CustomProfileIconComp
             width="50px"
             height="50px"
-            imgLink={getChatPartnerData(selectedChat, userData?.id)?.profileImg}
+            imgLink={
+              selectedChat?.chatType === ChatTypeEnum.GROUP
+                ? GROUP_IMG
+                : getChatPartnerData(selectedChat, userData?.id)?.profileImg
+            }
           />
-          <span className=" capitalize font-bold text-xl">
-            {getChatPartnerData(selectedChat, userData?.id)?.firstName +
+          <span className=" capitalize font-bold text-xl  w-full">
+            {selectedChat?.chatType === ChatTypeEnum.GROUP ? (
+              <span className="truncate whitespace-nowrap overflow-hidden  flex justify-start items-center gap-4">
+                <span>
+                  {selectedChat?.users
+                    ?.map((user) => user?.firstName)
+                    .join(", ")}
+                </span>
+                <EditIcon className=" cursor-pointer" />
+              </span>
+            ) : (
+              getChatPartnerData(selectedChat, userData?.id)?.firstName +
               " " +
-              getChatPartnerData(selectedChat, userData?.id)?.lastName}
+              getChatPartnerData(selectedChat, userData?.id)?.lastName
+            )}
           </span>
         </div>
         <div className="info">

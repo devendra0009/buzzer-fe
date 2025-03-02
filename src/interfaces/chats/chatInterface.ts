@@ -5,6 +5,7 @@ export interface ChatState {
   id: number;
   chatName: string;
   image: string;
+  chatType: ChatTypeEnum;
   users: UserState[];
   messages: MessageState[];
   createdAt: string;
@@ -16,4 +17,10 @@ export interface ChatWrapper {
   selectedChat: ChatState;
   loading: boolean;
   error: string | null;
+}
+
+export enum ChatTypeEnum {
+  PRIVATE = "PRIVATE",
+  GROUP = "GROUP",
+  CHANNEL = "CHANNEL",
 }

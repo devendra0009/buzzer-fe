@@ -17,6 +17,7 @@ import { register } from "../../slices/authSlice";
 import AddIcon from "@mui/icons-material/Add";
 import CustomImageComp from "../../components/reusableComp/CustomImageComp";
 import { useNavigate } from "react-router-dom";
+import GoogleIcon from '@mui/icons-material/Google';
 import {
   getPostsByUserId,
   getReelsByUserId,
@@ -158,9 +159,14 @@ const Register = () => {
         sx={{ width: "80%", margin: "1.5rem 0" }}
         onClick={handleLoginWithFacebookClick}
         className="flex justify-center items-center gap-2 hover:cursor-pointer font-semibold"
+        color="inherit"
       >
-        <FacebookIcon />
-        Log in with Facebook
+        {/* <FacebookIcon />
+        Log in with Facebook */}
+
+        <GoogleIcon color="error"/>
+        Sign up with Google
+        
       </Button>
       <p>OR</p>
       <div className="texts flex flex-col gap-4 justify-center items-center my-6">

@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { login, register } from "../../slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import GoogleIcon from '@mui/icons-material/Google';
 import {
   getPostsByUserId,
   getReelsByUserId,
@@ -160,10 +161,12 @@ const Login = () => {
 
       <p
         onClick={handleLoginWithFacebookClick}
-        className=" flex justify-center items-center gap-2 text-blue-600 hover:text-blue-400  hover:cursor-pointer  font-semibold"
+        className=" flex justify-center items-center gap-2 text-red-600 hover:text-red-400  hover:cursor-pointer  font-semibold"
       >
-        <FacebookIcon color="primary" />
-        Log in with Facebook
+        {/* <FacebookIcon color="primary" />
+        Log in with Facebook */}
+        <GoogleIcon color="error"/>
+        Sign in with Google
       </p>
       <p className=" py-5   hover:cursor-pointer  font-semibold">
         Forgot password?
