@@ -17,7 +17,7 @@ const ProfileReusablePostsComp: React.FC<ProfileReusablePostsCompProps> = ({
   const { userData } = useSelector((state: RootState) => state.user);
   const [isOpenPostModal, setIsOpenPostModal] = useState(false);
 
-  const [selectedPost, setSelectedPost] = useState<PostState | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
   const handleModalOpen = () => {
     setIsOpenPostModal(true);
@@ -30,7 +30,7 @@ const ProfileReusablePostsComp: React.FC<ProfileReusablePostsCompProps> = ({
           key={idx}
           className="post-container relative group "
           onClick={() => {
-            setSelectedPost(post);
+            setSelectedPostId(post?.id);
             handleModalOpen();
           }}
         >
@@ -58,9 +58,8 @@ const ProfileReusablePostsComp: React.FC<ProfileReusablePostsCompProps> = ({
         <PostModal
           isOpenPostModal={isOpenPostModal}
           setIsOpenPostModal={setIsOpenPostModal}
-          selectedPost={selectedPost}
+          selectedPostId={selectedPostId}
           userData={userData}
-          setSelectedPost={setSelectedPost}
         />
       )}
     </div>

@@ -4,6 +4,7 @@ export interface MessageState {
   id: number;
   content: string;
   image: string;
+  audio: string;
   user: UserState;
   createdAt: string;
   updatedAt: string;

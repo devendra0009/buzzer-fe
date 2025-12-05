@@ -31,7 +31,7 @@ export const createStory = createAsyncThunk(
   "createStory",
   async (data: StoryRequest, { rejectWithValue, dispatch }) => {
     try {
-      ;
+      
       const response = await createStoryFromApi(data);
       dispatch(appendStoryForUser(response.data));
       return response;

@@ -21,6 +21,7 @@ import CustomImageComp from "../reusableComp/CustomImageComp";
 import LinearProgress, {
   LinearProgressProps,
 } from "@mui/material/LinearProgress";
+import { createStoryFromApi, getAllStoryForUserFromApi } from "../../apis/story/storyApis";
 
 const StoryComp = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,8 @@ const StoryComp = () => {
   const [file, setFile] = useState<File | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [deactivatedAt, setDeactivatedAt] = useState<number>(300);
+
+  const [storyData, setStoryData] = useState<StoryState[]>([]);
 
   const handleModalClose = () => {
     setIsStoryCreateModal(false);
@@ -66,15 +69,20 @@ const StoryComp = () => {
     setIsStoryCreateModal(false);
   };
 
-  const handlePostStory = () => {
+  const handlePostStory =async () => {
     if (captions === "" || file === null) return;
     const data = {
       captions,
-      deactivatedAt: deactivatedAt,
       image: file,
+      deactivatedAt: deactivatedAt,
     };
 
-    dispatch(createStory(data));
+    // dispatch(createStory(data));
+const res= await createStoryFromApi(data);
+    if(!res.success) return;
+
+    getAllStoryForUser();
+
 
     resetCreateSrotyModal();
   };
@@ -88,9 +96,21 @@ const StoryComp = () => {
     setViewingStory(story);
   };
 
+  const getAllStoryForUser =async () => {
+    // debugger;
+        const res = await getAllStoryForUserFromApi();
+
+        if (!res.success) return;
+        setStoryData(res.data);
+  }
+  
+    useEffect(() => {
+        getAllStoryForUser();
+    }, []);
+
   return (
     <div className="flex gap-4 overflow-x-auto p-2 scrollbar-hide">
-      {findCurrUsersStories(userData?.stories, userData?.id)?.length <= 0 ? (
+      {findCurrUsersStories(storyData, userData?.id)?.length <= 0 ? (
         <span className="relative cursor-pointer" onClick={handleCreateStory}>
           <CustomProfileIconComp
             width="50px"
@@ -104,7 +124,7 @@ const StoryComp = () => {
           />
         </span>
       ) : (
-        findCurrUsersStories(userData?.stories, userData?.id)?.map(
+        findCurrUsersStories(storyData, userData?.id)?.map(
           (currStory, index) => (
             <span onClick={() => handleViewStory(currStory)}>
               <CustomProfileIconComp
@@ -122,7 +142,7 @@ const StoryComp = () => {
         )
       )}
 
-      {findCurrUsersExcludingStories(userData?.stories, userData?.id)?.map(
+      {findCurrUsersExcludingStories(storyData, userData?.id)?.map(
         (story: StoryState, index) => (
           <span onClick={() => handleViewStory(story)}>
             <CustomProfileIconComp

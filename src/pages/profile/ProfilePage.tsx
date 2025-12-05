@@ -32,17 +32,16 @@ const ProfilePage = () => {
 
     const res = await getUserById(Number(pid));
 
-    console.log(res, "rizz");
+    // console.log(res, "rizz");
 
-    const posts = await getPostsByUserIdFromApi(res?.data?.id);
+    // const posts = await getPostsByUserIdFromApi(res?.data?.id);
 
-    const reels = await getReelsByUserIdFromApi(res?.data?.id);
-    const savedPost = await getSavedPostsByUserIdFromApi(res?.data?.id);
-    //   stories: StoryState[];
+    // const reels = await getReelsByUserIdFromApi(res?.data?.id);
+    // const savedPost = await getSavedPostsByUserIdFromApi(res?.data?.id);
 
-    res.data["posts"] = posts?.data;
-    res.data["reels"] = reels?.data;
-    res.data["savedPost"] = savedPost?.data;
+    // res.data["posts"] = posts?.data;
+    // res.data["reels"] = reels?.data;
+    // res.data["savedPost"] = savedPost?.data;
 
     console.log(res);
     setCurrUser(res.data);
@@ -51,9 +50,9 @@ const ProfilePage = () => {
   useEffect(() => {
     if (userData?.id.toString() === pid) {
       //   console.log("asa");
-      dispatch(getPostsByUserId(userData?.id));
-      dispatch(getReelsByUserId(userData?.id));
-      dispatch(getSavedPostsByUserId(userData?.id));
+      // dispatch(getPostsByUserId(userData?.id));
+      // dispatch(getReelsByUserId(userData?.id));
+      // dispatch(getSavedPostsByUserId(userData?.id));
     } else {
       //   console.log("ram");
       fetchUserById();

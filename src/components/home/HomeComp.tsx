@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import StoryComp from "../story/StoryComp";
 import { RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,10 +9,15 @@ import PostsContainer from "../postsAndReels/PostsContainer";
 import { removeTokenFromLocalStorage } from "../../helpers/helpers";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../actions/actions";
+import { setTokenInitially } from "../../slices/authSlice";
+import { getUserDetailsByToken } from "../../slices/userSlice";
+import { getAllPosts } from "../../slices/postSlice";
+import { getAllReels } from "../../slices/reelSlice";
+import { getAllStoryForUser } from "../../slices/storySlice";
 
 const HomeComp = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const dispatch = useDispatch();
   const { userData, loading, error } = useSelector(
     (state: RootState) => state.user
   );
@@ -21,6 +26,17 @@ const HomeComp = () => {
     removeTokenFromLocalStorage();
     window.location.href = "/login";
   };
+
+  // useEffect(() => {
+
+  //   const token = localStorage.getItem("token");
+
+  //   if (token) {
+  //     dispatch(setTokenInitially({ token }));
+  //     dispatch(getUserDetailsByToken(token));
+  //   }
+  // }, []);
+
   return (
     <div className=" flex justify-between  w-[80%] h-full overflow-y-scroll mx-auto">
       <div className="left-side w-3/4 flex flex-col gap-4">
@@ -36,12 +52,12 @@ const HomeComp = () => {
           <CustomProfileIconComp
             width="50px"
             height="50px"
-            imgLink={userData.profileImg}
+            imgLink={userData?.profileImg}
           />
           <div className="name flex flex-col">
-            <span>{userData.userName}</span>
+            <span>{userData?.userName}</span>
             <span className=" text-[var(--text-light-gray)] capitalize">
-              {userData.firstName} {userData.lastName}
+              {userData?.firstName} {userData?.lastName}
             </span>
           </div>
           <div

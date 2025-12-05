@@ -22,52 +22,96 @@ import {
 import TextBlueLink from "../reusableComp/TextBlueLink";
 import { PostState } from "../../interfaces/post/postInterface";
 import PostModal from "../reusableComp/PostModal";
+import { commentOnPostByApi, getAllPostsFromApi, liketPostByApi, savePostByApi } from "../../apis/post/postApi";
 
 const PostsContainer = () => {
-  const dispatch = useDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
-  const { postData } = useSelector((state: RootState) => state.post);
 
   // State for comments mapped by postId
   const [comments, setComments] = useState<{ [key: number]: string }>({});
   const [isOpenPostModal, setIsOpenPostModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<PostState | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [postData, setPostData] = useState<PostState[]>([]);
   
 
-  const handleToggleLike = (postId: number) => {
-    dispatch(liketPost(postId));
+  const handleToggleLike = async (postId: number) => {
+   const res = await liketPostByApi(postId);
+  if (!res.success) return;
+
+  const updatedPost: PostState = res.data;
+      setPostData((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === updatedPost?.id ? updatedPost : post
+      )
+    );
   };
 
-  const handlePostComment = (postId: number) => {
+  const handlePostComment =async (postId: number) => {
     const data = {
       content: comments[postId] || "", // Get comment for the specific post
       postId: postId,
     };
+  const res = await commentOnPostByApi(data);
+  if (!res.success) return;
 
-    dispatch(commentOnPost(data)).then(() => {
-      setComments((prev) => ({ ...prev, [postId]: "" })); // Clear comment for this post
-    });
+  const newComment = res.data;
+  setPostData(prev =>
+    prev.map(post =>
+      post.id === newComment.post.id
+        ? {
+            ...post,
+            comments: [newComment, ...(post.comments || [])],
+          }
+        : post
+    )
+  );
+
+  setComments(prev => ({
+    ...prev,
+    [postId]: "",
+  }));
+
   };
 
   const handlePostModal = (post: PostState) => {
-    // dispatch(getAllCommentsByPost(postId)).then((data) => {
-    //   setSelectedPost(data?.payload?.data[0]?.post);
-    // });
-    setSelectedPost(post);
+console.log(post);
+
+     if (!post) {
+    console.log("Post is null/undefined");
+    return;
+  }
+    setSelectedPostId(post?.id || null);
     setIsOpenPostModal(true);
   };
 
-  const handleSavePost = (postId: number) => {
-    dispatch(savePost(postId));
+  const handleSavePost = async(postId: number) => {
+   const res = await savePostByApi(postId);
+  if (!res.success) return;
+
+  setPostData(prev =>
+    prev.map(post =>
+      post.id === postId
+        ? res.data 
+        : post
+    )
+  );
   };
 
+  const getAllPosts = async () => {
+    const res = await getAllPostsFromApi();
+    setPostData(res.data);
+  }
+
+  useEffect(() => {
+      getAllPosts();
+  }, []);
   
 
   return (
     <div className="flex flex-col gap-4">
       {postData?.map((post) => {
         return (
-          <div key={post.id}>
+          <div key={post?.id}>
             <div className="flex items-center justify-between">
               <div className="header flex gap-2 items-center p-1">
                 <CustomProfileIconComp imgLink={post?.user?.profileImg} />
@@ -178,8 +222,7 @@ const PostsContainer = () => {
         <PostModal
           isOpenPostModal={isOpenPostModal}
           setIsOpenPostModal={setIsOpenPostModal}
-          selectedPost={selectedPost}
-          setSelectedPost={setSelectedPost}
+          selectedPostId={selectedPostId}
           userData={userData}
         />
       )}

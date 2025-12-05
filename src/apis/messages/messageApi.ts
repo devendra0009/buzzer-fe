@@ -34,6 +34,12 @@ export const createMessageForChatFromApi = async (reqData) => {
     restData["image"] = res?.data;
   }
 
+  if (restData?.audio && restData?.audio !== "") {
+    const res = await uploadDocs(restData.audio);
+    console.log(res, "audio");
+    restData["audio"] = res?.data;
+  }
+
   const response = await customAxios.post(
     `${BASE_URI}/message/new/chat/${chatId}`,
     restData

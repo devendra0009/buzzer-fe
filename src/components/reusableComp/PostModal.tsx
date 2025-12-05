@@ -15,19 +15,12 @@ import { CommentState } from "../../interfaces/comment/commentInterface";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import SendIcon from "@mui/icons-material/Send";
-import {
-  commentOnPost,
-  getAllPosts,
-  likeAComment,
-} from "../../slices/postSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { commentOnPostByApi, getPostByPostIdFromApi, likeACommentByApi } from "../../apis/post/postApi";
 
 interface PostModalInterface {
   isOpenPostModal: boolean;
   setIsOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedPost: PostState | null;
-  setSelectedPost: React.Dispatch<React.SetStateAction<PostState | null>>;
+  selectedPostId: number | null;
   userData: UserState | undefined;
   // handleToggleCommentLike: () => void;
 }
@@ -35,39 +28,68 @@ interface PostModalInterface {
 const PostModal: React.FC<PostModalInterface> = ({
   isOpenPostModal,
   setIsOpenPostModal,
-  selectedPost,
-  setSelectedPost,
+  selectedPostId,
   userData,
 }) => {
-  const dispatch = useDispatch();
-  const { postData } = useSelector((state: RootState) => state.post);
+  console.log("Selected Post in Modal:", selectedPostId);
+
+  const [selectedPost, setSelectedPost] = useState<PostState|null>(null);
   const [comment, setComment] = useState("");
 
   const handleModalClose = () => {
     setIsOpenPostModal(false);
   };
 
-  const handlePostComment = () => {
+  const handlePostComment =async () => {
     if (selectedPost && comment !== "" && comment.trim()) {
       const data = {
         content: comment,
         postId: selectedPost?.id,
       };
 
-      dispatch(commentOnPost(data)).then(() => {
+      const res=await commentOnPostByApi(data);
+      if(!res.success) return;
+
+          setSelectedPost((prevPost) => {
+  if (!prevPost) return prevPost; // or return null
+  return {
+    ...prevPost,
+    comments: [ ...(prevPost.comments || []),res.data],
+  };
+});
+
         setComment("");
-      });
-      dispatch(getAllPosts());
-    }
+}
   };
 
-  useEffect(() => {
-    const updatedPost = postData?.find((p) => p?.id === selectedPost?.id);
-    setSelectedPost(updatedPost);
-  }, [postData]);
+  const getSelectedPostById = async (postId: number) => {
+    const res = await getPostByPostIdFromApi(postId);
+    if (!res.success) return;
+    setSelectedPost(res.data);
+  }
 
-  const handleToggleCommentLike = (commentId) => {
-    dispatch(likeAComment(commentId));
+  useEffect(() => {
+    // const updatedPost = postData?.find((p) => p?.id === selectedPost?.id);
+    // setSelectedPost(updatedPost);
+getSelectedPostById(selectedPostId);
+  }, []);
+
+  const handleToggleCommentLike =async (commentId:number) => {
+    // dispatch(likeAComment(commentId));
+    console.log("Like comment with ID:", commentId);
+    const res= await likeACommentByApi(commentId);
+    if(!res.success) return;
+
+    // Update the selectedPost's comments to reflect the like change
+    setSelectedPost((prevPost) => {
+      if (!prevPost) return prevPost;
+      return {
+        ...prevPost,
+        comments: prevPost.comments?.map((commnt) =>
+          commnt.id === commentId ? res.data : commnt
+        ),
+      };
+    });
   };
 
   return (

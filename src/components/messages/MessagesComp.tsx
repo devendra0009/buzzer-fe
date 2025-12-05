@@ -12,16 +12,23 @@ import { getAllMessagesByChatId } from "../../slices/messageSlice";
 import { searchUser } from "../../apis/user/userApi";
 import useDebounce from "../../hook/useDebounce";
 import TextLightGraySmall from "../reusableComp/TextLightGraySmall";
-import { createNewChat } from "../../apis/chat/chatApis";
+import {
+  createNewChat,
+  getAllChatsForCurrUserFromApi,
+} from "../../apis/chat/chatApis";
+import { ChatState } from "../../interfaces/chats/chatInterface";
 
 const MessagesComp = () => {
-  const { allChats, selectedChat } = useSelector(
-    (state: RootState) => state.chat
-  );
-  const dispatch = useDispatch();
+  // const { allChats, selectedChat } = useSelector(
+  //   (state: RootState) => state.chat
+  // );
+  // const dispatch = useDispatch();
   const { userData, loading, error } = useSelector(
     (state: RootState) => state.user
   );
+
+  const [allChats, setAllChats] = useState<ChatState[]>([]);
+  const [selectedChat, setSelectedChat] = useState<any>({});
   // const [isChatOpen, setIsChatOpen] = useState(false);
   const [sendMsgModalOpen, setSendMsgModalOpen] = useState(false);
   // const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
@@ -62,7 +69,8 @@ const MessagesComp = () => {
         setSearchQuery("");
         setSelectedUsers([]);
         setSearchResults([]);
-        dispatch(getAllChatsForCurrUser());
+        // dispatch(getAllChatsForCurrUser());
+        getAllChats();
       });
     } catch (error) {
       console.error(error);
@@ -70,13 +78,22 @@ const MessagesComp = () => {
   };
 
   const handleChatClick = (chatId) => {
-    dispatch(getChatById(chatId)).then((data) => {
-      dispatch(getAllMessagesByChatId(data.payload.data.id));
-    });
+    // dispatch(getChatById(chatId)).then((data) => {
+    //   dispatch(getAllMessagesByChatId(data.payload.data.id));
+    // });
+
+    setSelectedChat(allChats.find((chat) => chat.id === chatId));
+  };
+
+  const getAllChats = async () => {
+    const response = await getAllChatsForCurrUserFromApi();
+    if (!response.success) return;
+    setAllChats(response.data);
   };
 
   useEffect(() => {
-    dispatch(getAllChatsForCurrUser());
+    // dispatch(getAllChatsForCurrUser());
+    getAllChats();
   }, []);
 
   // logic for showing suggested users in the modal
@@ -147,7 +164,7 @@ const MessagesComp = () => {
       </div>
       <div className="message-container w-3/4  ">
         {selectedChat?.id > 0 ? (
-          <MessageContainer />
+          <MessageContainer selectedChatId={selectedChat?.id}/>
         ) : (
           <div className="alt-temp flex flex-col  justify-center items-center gap-2 min-h-screen ">
             <svg

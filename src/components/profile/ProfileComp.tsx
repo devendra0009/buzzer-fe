@@ -14,6 +14,13 @@ import {
   getSavedPostsByUserId,
 } from "../../slices/userSlice";
 import { UserState } from "../../interfaces/user/userInterfaces";
+import {
+  getPostsByUserIdFromApi,
+  getReelsByUserIdFromApi,
+  getSavedPostsByUserIdFromApi,
+} from "../../apis/user/userApi";
+import { PostState } from "../../interfaces/post/postInterface";
+import { ReelState } from "../../interfaces/reel/reelInterface";
 
 const tabs = ["posts", "reels", "saved"];
 
@@ -23,21 +30,53 @@ interface ProfileCompProps {
 
 const ProfileComp: React.FC<ProfileCompProps> = ({ userData }) => {
   const [activeTab, setActiveTab] = useState("posts");
-  // const { userData, loading, error } = useSelector(
-  //   (state: RootState) => state.user
-  // );
 
   const setClickedTab = (tab) => {
     setActiveTab(tab);
   };
 
-  // useEffect(() => {
-  //   if (userData?.id > 0) {
-  //     dispatch(getPostsByUserId(userData?.id));
-  //     dispatch(getReelsByUserId(userData?.id));
-  //     dispatch(getSavedPostsByUserId(userData?.id));
-  //   }
-  // }, [userData?.id]);
+  const [posts, setPosts] = useState<PostState[]>([]);
+  const [savedPosts, setSavedPosts] = useState<PostState[]>([]);
+  const [reels, setReels] = useState<ReelState[]>([]);
+
+  const getPostByUser = async () => {
+    const res = await getPostsByUserIdFromApi(userData?.id);
+    if (!res?.success) return;
+    if (res?.data) {
+      setPosts(res?.data);
+    } else {
+      // toast.error("No posts");
+    }
+  };
+
+  const getSavedPostByUser = async () => {
+    const res = await getSavedPostsByUserIdFromApi(userData?.id);
+    if (!res?.success) return;
+    if (res?.data) {
+      setSavedPosts(res?.data);
+    } else {
+      // toast.error("No posts");
+    }
+  };
+
+  const getReelByUser = async () => {
+    const res = await getReelsByUserIdFromApi(userData?.id);
+    console.log(res);
+
+    if (!res?.success) return;
+    if (res?.data) {
+      setReels(res?.data);
+    } else {
+      // toast.error("No posts");
+    }
+  };
+
+  useEffect(() => {
+    getPostByUser();
+    getReelByUser();
+    getSavedPostByUser();
+  }, []);
+
   return (
     <div className=" ">
       <div className="personal-details flex p-12">
@@ -61,9 +100,7 @@ const ProfileComp: React.FC<ProfileCompProps> = ({ userData }) => {
             </div>
           </div>
           <div className="flex justify-start gap-6">
-            <span>
-              {userData?.posts?.length + userData?.reels?.length} posts
-            </span>
+            <span>{posts?.length + reels?.length} posts</span>
             <span>{userData?.followers?.length} followers</span>
             <span>{userData?.followings?.length} followings</span>
           </div>
@@ -98,11 +135,11 @@ const ProfileComp: React.FC<ProfileCompProps> = ({ userData }) => {
           {(() => {
             switch (activeTab) {
               case "posts":
-                return <ProfilePostsComp posts={userData?.posts} />;
+                return <ProfilePostsComp posts={posts} />;
               case "reels":
-                return <ProfileReelComp userData={userData} />;
+                return <ProfileReelComp reels={reels} />;
               case "saved":
-                return <ProfileSavedComp userData={userData} />;
+                return <ProfileSavedComp savedPosts={savedPosts} />;
             }
           })()}
         </div>

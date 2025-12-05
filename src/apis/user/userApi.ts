@@ -44,11 +44,13 @@ export const getReelsByUserIdFromApi = async (
       size,
     },
   });
+  console.log(response);
+  
   return {
     status: response.status,
     success: true,
     message: response.data.message,
-    data: response.data.data.data,
+    data: response.data,
   };
 };
 //shubham

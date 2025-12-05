@@ -2,13 +2,16 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import ProfileReusablePostsComp from "./ProfileReusablePostComp";
 import { PostState } from "../../interfaces/post/postInterface";
+import { useEffect, useState } from "react";
+import { getPostsByUserIdFromApi } from "../../apis/user/userApi";
 
 interface ProfilePostsCompProps {
   posts: PostState[];
 }
 
-const ProfilePostsComp: React.FC<ProfilePostsCompProps> = ({ posts }) => {
-  // const { userData } = useSelector((state: RootState) => state.user);
+const ProfilePostsComp: React.FC<ProfilePostsCompProps> = ({posts}) => {
+
+ 
   return (
     <div>
       <ProfileReusablePostsComp postProp={posts} />

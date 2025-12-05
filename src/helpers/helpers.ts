@@ -100,8 +100,8 @@ export const getChatPartnerData = (
   chat: ChatState,
   currUserId: number
 ): UserState => {
-  const isFirstUser = chat.users[0]?.id === currUserId;
-  const partnerUser = isFirstUser ? chat.users[1] : chat.users[0];
+  const isFirstUser = chat.users?.[0]?.id === currUserId;
+  const partnerUser = isFirstUser ? chat.users[1] : chat.users?.[0];
 
   return partnerUser;
 };
@@ -116,6 +116,12 @@ export const isVideo = (imageUrl) => {
   const videoExtensions = ["mp4", "mov", "avi", "webm", "mkv"];
   const extension = imageUrl?.split(".").pop().toLowerCase();
   return videoExtensions.includes(extension);
+};
+
+export const isAudio = (audioUrl) => {
+  const audioExtensions = ["mpeg", "mp3", "wav", "webm", "ogg","x-wav"];
+  const extension = audioUrl?.split(".").pop().toLowerCase();
+  return audioExtensions.includes(extension);
 };
 
 export const findCurrUsersStories = (

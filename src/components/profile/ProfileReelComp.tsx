@@ -12,16 +12,18 @@ import CustomProfileIconComp from "./CustomProfileIconComp";
 import TextBlueLink from "../reusableComp/TextBlueLink";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { UserState } from "../../interfaces/user/userInterfaces";
+import { getReelsByUserIdFromApi } from "../../apis/user/userApi";
+import { useSelector } from "react-redux";
 
 interface ProfileReelCompProps {
-  userData: UserState;
+  reels: ReelState[];
 }
 
-const ProfileReelComp: React.FC<ProfileReelCompProps> = ({ userData }) => {
+const ProfileReelComp: React.FC<ProfileReelCompProps> = ({ reels }) => {
   // const { reelData, loading, error } = useSelector(
   //   (state: RootState) => state.reel
   // );
-  // const { userData } = useSelector((state: RootState) => state.user);
+  const { userData } = useSelector((state: RootState) => state.user);
 
   const [selectedReel, setSelectedReel] = useState<ReelState | null>(null);
   const [isOpenReelModal, setIsOpenReelModal] = useState(false);
@@ -29,15 +31,14 @@ const ProfileReelComp: React.FC<ProfileReelCompProps> = ({ userData }) => {
   const [thumbnails, setThumbnails] = useState({});
 
   useEffect(() => {
-    userData?.reels?.forEach((reel) => {
+    reels?.forEach((reel) => {
       getVideoThumbnail(reel.video, (thumbnail) => {
         setThumbnails((prev) => ({ ...prev, [reel.id]: thumbnail }));
       });
     });
-  }, [userData?.reels]);
+  }, [reels]);
 
   const handleModalClose = () => {
-    ;
     setIsOpenReelModal(false);
   };
 
@@ -47,7 +48,7 @@ const ProfileReelComp: React.FC<ProfileReelCompProps> = ({ userData }) => {
 
   return (
     <div className=" grid grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-2">
-      {userData?.reels?.map((reel, idx) => (
+      {reels?.map((reel, idx) => (
         <div
           key={idx}
           className="post-container relative group hover:cursor-pointer "

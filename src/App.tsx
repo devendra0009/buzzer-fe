@@ -60,28 +60,16 @@ export const router = createBrowserRouter([
 
 function App() {
   const dispatch = useDispatch();
-  const { userData, loading, error } = useSelector(
-    (state: RootState) => state.user
-  );
 
   useEffect(() => {
-    ;
     const token = localStorage.getItem("token");
 
     if (token) {
       dispatch(setTokenInitially({ token }));
-      dispatch(getUserDetailsByToken(token)).then((data) => {
-        // console.log(data);
-        dispatch(getAllPosts());
-        dispatch(getAllReels());
-        dispatch(getAllStoryForUser());
-      });
+      dispatch(getUserDetailsByToken(token));
     }
   }, []);
   return (
-    // <>
-    //   <Authentication />
-    // </>
     <RouterProvider router={router} />
   );
 }
