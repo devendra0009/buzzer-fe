@@ -13,6 +13,22 @@ export const getUserDetailsByTokenApi = async () => {
   };
 };
 
+export const validateUsername = async (username) => {
+  debugger
+  const response = await customAxios.get(
+    `${BASE_URI}/auth/validate/userName`,
+    {
+      params: { username: username },
+    }
+  );
+  return {
+    status: response.status,
+    success: true,
+    message: response.data.message,
+    data: response.data,
+  };
+};
+
 export const getPostsByUserIdFromApi = async (
   userId,
   page: number = 0,
@@ -45,7 +61,7 @@ export const getReelsByUserIdFromApi = async (
     },
   });
   console.log(response);
-  
+
   return {
     status: response.status,
     success: true,

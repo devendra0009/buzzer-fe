@@ -26,6 +26,8 @@ import { getAllPosts } from "./slices/postSlice";
 import { getAllStoryForUser } from "./slices/storySlice";
 import ProfilePage from "./pages/profile/ProfilePage";
 import PostModal from "./components/reusableComp/PostModal";
+import { ToastContainer } from "react-toastify";
+import SettingsPage from "./pages/settings/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +47,7 @@ export const router = createBrowserRouter([
       { path: "/create-post", element: <CreatePostComp type="POST" /> },
       { path: "/create-reel", element: <CreatePostComp type="REEL" /> },
       { path: "/profile/:pid", element: <ProfilePage /> },
+      { path: "/settings/:userId", element: <SettingsPage /> },
     ],
   },
   {
@@ -70,7 +73,10 @@ function App() {
     }
   }, []);
   return (
-    <RouterProvider router={router} />
+    <>
+      <ToastContainer />
+      <RouterProvider router={router} />
+    </>
   );
 }
 

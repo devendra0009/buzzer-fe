@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import {
   Button,
@@ -14,13 +14,20 @@ import {
 import { RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../slices/authSlice";
+import { MdError } from "react-icons/md";
+import { SiTicktick } from "react-icons/si";
+import { validateUsername } from "../../apis/user/userApi";
+import { showError, showSuccess } from "../../utils/toast";
 
 const Register = () => {
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
 
+  const ppRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+
   // Form state variables
-  const [profileImg, setProfileImg] = useState("");
+  const [profileImg, setProfileImg] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -30,6 +37,8 @@ const Register = () => {
   const [userName, setUserName] = useState("");
 
   // Error state variables
+  const [profileImgError, setProfileImgError] = useState("");
+  const [userNameError, setUserNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -39,6 +48,37 @@ const Register = () => {
 
   // Handle login with Facebook (not implemented)
   const handleLoginWithFacebookClick = () => {};
+
+  const handleVerifyUserName = (userName) => {
+    if (!userName) {
+      setUserNameError("User name cannot be empty");
+      return;
+    }
+
+    const res = validateUsername(userName);
+
+    if (res.success) {
+      setUserNameError(res.message + "Please choose another one.");
+      showError("User name is already taken");
+    } else {
+      setUserNameError("");
+      showSuccess("User name is available");
+    }
+  };
+
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Preview instant image
+    const imageUrl = URL.createObjectURL(file);
+    setPreview(imageUrl);
+
+    setProfileImg(file);
+
+    // Optional: upload to backend later
+    // setFormData({ ...formData, profilePic: file });
+  };
 
   // Validate form inputs
   const validateInputs = () => {
@@ -59,6 +99,22 @@ const Register = () => {
       valid = false;
     } else {
       setPasswordError("");
+    }
+
+    // User img validation
+    if (!profileImg) {
+      setProfileImgError("Profile image is required");
+      valid = false;
+    } else {
+      setProfileImgError("");
+    }
+
+    // User name validation
+    if (!userName) {
+      setUserNameError("User name is required");
+      valid = false;
+    } else {
+      setUserNameError("");
     }
 
     // First name validation
@@ -100,7 +156,6 @@ const Register = () => {
   // Handle register button click
   const handleRegisterClick = () => {
     if (validateInputs()) {
-
       // const data = {
       //   profileImg,
       //   email,
@@ -129,13 +184,7 @@ const Register = () => {
   return (
     <div className="">
       <p>Sign up to see photos and videos from your friends.</p>
-      <div className="flex justify-center mt-4">
-        <Avatar
-          alt={userName}
-          src="/static/images/avatar/1.jpg"
-          sx={{ width: 75, height: 75 }}
-        />
-      </div>
+
       <Button
         variant="contained"
         sx={{ width: "80%", margin: "1.5rem 0" }}
@@ -147,9 +196,60 @@ const Register = () => {
       </Button>
       <p>OR</p>
       <div className="texts flex flex-col gap-4 justify-center items-center my-6">
+        <div className=" flex gap-6  w-[80%]">
+          <div className="flex justify-center mt-4 w-1/3">
+            <div
+              onClick={() => ppRef.current.click()}
+              className="cursor-pointer flex flex-col items-center gap-2"
+            >
+              <Avatar
+                alt={userName}
+                src={preview || "/static/images/avatar/1.jpg"}
+                sx={{ width: 75, height: 75 }}
+              />
+              {profileImgError && (
+                <div className=" flex items-center gap-1 text-red-500 text-sm mt-1">
+                  <MdError /> {profileImgError}
+                </div>
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={ppRef}
+              onChange={handleProfilePicChange}
+            />
+          </div>
+          <div className=" flex flex-col justify-center items-center gap-4 w-2/3">
+            <TextField
+              id="firstName"
+              label="First Name"
+              variant="outlined"
+              size="small"
+              sx={{ width: "100%" }}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              error={!!firstNameError}
+              helperText={firstNameError}
+            />
+            <TextField
+              id="lastName"
+              label="Last Name"
+              variant="outlined"
+              size="small"
+              sx={{ width: "100%" }}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              error={!!lastNameError}
+              helperText={lastNameError}
+            />
+          </div>
+        </div>
+
         <TextField
           id="mobile-or-email"
-          label="Mobile Number or Email"
+          label="Email"
           variant="outlined"
           size="small"
           sx={{ width: "80%" }}
@@ -158,16 +258,42 @@ const Register = () => {
           error={!!emailError}
           helperText={emailError}
         />
+        <div className=" w-[80%] flex justify-center gap-4  items-center">
+          <TextField
+            id="userName"
+            label="User Name"
+            variant="outlined"
+            size="small"
+            sx={{ width: "100%" }}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            error={!!userNameError}
+            helperText={userNameError}
+          />
+
+          <button
+            type="button"
+            onClick={() => handleVerifyUserName(userName)}
+            className="cursor-pointer hover:scale-110"
+            style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+            }}
+          >
+            <SiTicktick color="blue" />
+          </button>
+        </div>
         <TextField
-          id="userName"
-          label="User Name"
+          id="phone"
+          label="Phone Number"
           variant="outlined"
           size="small"
           sx={{ width: "80%" }}
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          // error={!!userNameError}
-          // helperText={userNameError}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          error={!!phoneError}
+          helperText={phoneError}
         />
         <TextField
           id="password"
@@ -179,39 +305,6 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           error={!!passwordError}
           helperText={passwordError}
-        />
-        <TextField
-          id="firstName"
-          label="First Name"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          error={!!firstNameError}
-          helperText={firstNameError}
-        />
-        <TextField
-          id="lastName"
-          label="Last Name"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          error={!!lastNameError}
-          helperText={lastNameError}
-        />
-        <TextField
-          id="phone"
-          label="Phone Number"
-          variant="outlined"
-          size="small"
-          sx={{ width: "80%" }}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          error={!!phoneError}
-          helperText={phoneError}
         />
         <FormControl error={!!genderError} sx={{ width: "80%" }}>
           <RadioGroup

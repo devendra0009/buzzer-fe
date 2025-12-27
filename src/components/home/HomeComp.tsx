@@ -38,16 +38,16 @@ const HomeComp = () => {
   // }, []);
 
   return (
-    <div className=" flex justify-between  w-[80%] h-full overflow-y-scroll mx-auto">
-      <div className="left-side w-3/4 flex flex-col gap-4">
+    <div className="flex  justify-between  w-[80%] h-full overflow-y-scroll mx-auto ">
+      <div className="left-side md:w-3/4 flex flex-col gap-4">
         <div className="story-bar">
           <StoryComp />
         </div>
-        <div className="reel-container">
+        <div className="reel-container ">
           <PostsContainer />
         </div>
       </div>
-      <div className="right-side w-1/4 ">
+      <div className="right-side w-1/4 hidden md:block ">
         <div className="profile flex  justify-center items-center gap-4 pt-2">
           <CustomProfileIconComp
             width="50px"
@@ -67,7 +67,7 @@ const HomeComp = () => {
             Logout
           </div>
         </div>
-        <div className="suggestions-slider mt-8">
+        <div className="suggestions-slider mt-8 ">
           <SuggestionCarousel />
         </div>
       </div>

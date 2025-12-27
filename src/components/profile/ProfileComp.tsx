@@ -21,6 +21,7 @@ import {
 } from "../../apis/user/userApi";
 import { PostState } from "../../interfaces/post/postInterface";
 import { ReelState } from "../../interfaces/reel/reelInterface";
+import { useNavigate } from "react-router-dom";
 
 const tabs = ["posts", "reels", "saved"];
 
@@ -30,6 +31,7 @@ interface ProfileCompProps {
 
 const ProfileComp: React.FC<ProfileCompProps> = ({ userData }) => {
   const [activeTab, setActiveTab] = useState("posts");
+  const navigate = useNavigate();
 
   const setClickedTab = (tab) => {
     setActiveTab(tab);
@@ -95,7 +97,12 @@ const ProfileComp: React.FC<ProfileCompProps> = ({ userData }) => {
                 Outlined
               </Button>
             </div>
-            <div className="settings">
+            <div
+              className="settings hover:cursor-pointer"
+              onClick={() => {
+                navigate(`/settings/${userData?.id}`);
+              }}
+            >
               <SettingsIcon />
             </div>
           </div>
