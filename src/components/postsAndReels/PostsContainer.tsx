@@ -22,7 +22,12 @@ import {
 import TextBlueLink from "../reusableComp/TextBlueLink";
 import { PostState } from "../../interfaces/post/postInterface";
 import PostModal from "../reusableComp/PostModal";
-import { commentOnPostByApi, getAllPostsFromApi, liketPostByApi, savePostByApi } from "../../apis/post/postApi";
+import {
+  commentOnPostByApi,
+  getAllPostsFromApi,
+  liketPostByApi,
+  savePostByApi,
+} from "../../apis/post/postApi";
 
 const PostsContainer = () => {
   const { userData } = useSelector((state: RootState) => state.user);
@@ -32,80 +37,73 @@ const PostsContainer = () => {
   const [isOpenPostModal, setIsOpenPostModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [postData, setPostData] = useState<PostState[]>([]);
-  
 
   const handleToggleLike = async (postId: number) => {
-   const res = await liketPostByApi(postId);
-  if (!res.success) return;
+    const res = await liketPostByApi(postId);
+    if (!res.success) return;
 
-  const updatedPost: PostState = res.data;
-      setPostData((prevPosts) =>
+    const updatedPost: PostState = res.data;
+    setPostData((prevPosts) =>
       prevPosts.map((post) =>
-        post.id === updatedPost?.id ? updatedPost : post
-      )
+        post.id === updatedPost?.id ? updatedPost : post,
+      ),
     );
   };
 
-  const handlePostComment =async (postId: number) => {
+  const handlePostComment = async (postId: number) => {
     const data = {
       content: comments[postId] || "", // Get comment for the specific post
       postId: postId,
     };
-  const res = await commentOnPostByApi(data);
-  if (!res.success) return;
+    const res = await commentOnPostByApi(data);
+    if (!res.success) return;
 
-  const newComment = res.data;
-  setPostData(prev =>
-    prev.map(post =>
-      post.id === newComment.post.id
-        ? {
-            ...post,
-            comments: [newComment, ...(post.comments || [])],
-          }
-        : post
-    )
-  );
+    const newComment = res.data;
+    setPostData((prev) =>
+      prev.map((post) =>
+        post.id === newComment.post.id
+          ? {
+              ...post,
+              comments: [newComment, ...(post.comments || [])],
+            }
+          : post,
+      ),
+    );
 
-  setComments(prev => ({
-    ...prev,
-    [postId]: "",
-  }));
-
+    setComments((prev) => ({
+      ...prev,
+      [postId]: "",
+    }));
   };
 
   const handlePostModal = (post: PostState) => {
-console.log(post);
+    console.log(post);
 
-     if (!post) {
-    console.log("Post is null/undefined");
-    return;
-  }
+    if (!post) {
+      console.log("Post is null/undefined");
+      return;
+    }
     setSelectedPostId(post?.id || null);
     setIsOpenPostModal(true);
   };
 
-  const handleSavePost = async(postId: number) => {
-   const res = await savePostByApi(postId);
-  if (!res.success) return;
+  const handleSavePost = async (postId: number) => {
+    const res = await savePostByApi(postId);
+    if (!res.success) return;
 
-  setPostData(prev =>
-    prev.map(post =>
-      post.id === postId
-        ? res.data 
-        : post
-    )
-  );
+    setPostData((prev) =>
+      prev.map((post) => (post.id === postId ? res.data : post)),
+    );
   };
 
   const getAllPosts = async () => {
     const res = await getAllPostsFromApi();
     setPostData(res.data);
-  }
+  };
 
   useEffect(() => {
-      getAllPosts();
+    getAllPosts();
   }, []);
-  
 
   return (
     <div className="flex flex-col gap-4">
@@ -134,8 +132,9 @@ console.log(post);
             <div className="main-media px-[2.7rem] border-[1px] border-[var(--outliner-color)]">
               <CustomImageComp
                 width="100%"
-                height="100%"
+                height="400px"
                 imgLink={post?.mediaFiles?.[0]}
+                style={{ objectFit: "contain" }}
               />
             </div>
 
@@ -143,7 +142,7 @@ console.log(post);
               <div className="header flex justify-between">
                 <div className="intc flex gap-4">
                   {post?.likedBy?.find(
-                    (userLiked) => userLiked?.id === userData?.id
+                    (userLiked) => userLiked?.id === userData?.id,
                   ) ? (
                     <FavoriteIcon
                       color="error"
@@ -161,7 +160,7 @@ console.log(post);
                 </div>
                 <div className="save" onClick={() => handleSavePost(post?.id)}>
                   {post?.savedBy?.find(
-                    (userSaved) => userSaved?.id === userData?.id
+                    (userSaved) => userSaved?.id === userData?.id,
                   ) ? (
                     <BookmarkIcon className="hover:cursor-pointer" />
                   ) : (

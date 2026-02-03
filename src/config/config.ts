@@ -1,9 +1,12 @@
 // export const BASE_URI = "https://buzzer-7hlj.onrender.com/api/v1";
 // export const BASE_URI_SOCKET = "https://buzzer-7hlj.onrender.com/ws";
-export const BASE_URI = "http://localhost:8080/api/v1";
-export const BASE_URI_SOCKET = "http://localhost:8080/ws";
+// export const BASE_URI = "http://localhost:8080/api/v1";
+// export const BASE_URI_SOCKET = "http://localhost:8080/ws";
 // export const BASE_URI = "http://192.168.0.103:8080/api/v1";
 // export const BASE_URI_SOCKET = "http://192.168.0.103:8080/ws";
+
+export const BASE_URI = "http://100.27.230.74:8080/api/v1";
+export const BASE_URI_SOCKET = "http://100.27.230.74:8080/ws";
 
 export const RAND_IMG =
   "https://th.bing.com/th/id/OIP.V33VQxg_ASEriHC2Cf0ktAHaHI?rs=1&pid=ImgDetMain";
